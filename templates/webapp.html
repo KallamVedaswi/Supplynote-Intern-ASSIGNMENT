@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short Link Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        #app {
+            width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button.logout {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h2>Short Link Generator</h2>
+        <div id="login-container">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="link-container" style="display:none;">
+            <input type="url" id="url" placeholder="Enter URL">
+            <button onclick="generateShortLink()">Generate Short Link</button>
+            <button onclick="logout()" class="logout">Logout</button>
+        </div>
+        <div id="analytics-container" style="display:none;">
+            <h3>Your Short Links</h3>
+            <ul id="linkList"></ul>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let shortLinks = [];
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                currentUser = username;
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('link-container').style.display = 'block';
+                document.getElementById('analytics-container').style.display = 'none';
+            }
+        }
+
+        function generateShortLink() {
+            const url = document.getElementById('url').value;
+
+            if (url) {
+                const shortLink = {
+                    url: url,
+                    expires: new Date(Date.now() + 48 * 60 * 60 * 1000) // 48 hours
+                };
+
+                shortLinks.push(shortLink);
+                updateLinkList();
+
+                document.getElementById('url').value = '';
+            }
+        }
+
+        function updateLinkList() {
+            const linkList = document.getElementById('linkList');
+            linkList.innerHTML = '';
+
+            shortLinks.forEach(link => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${link.url} (Expires: ${link.expires.toLocaleString()})`;
+                linkList.appendChild(listItem);
+            });
+        }
+
+        function logout() {
+            currentUser = null;
+            shortLinks = [];
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('link-container').style.display = 'none';
+            document.getElementById('analytics-container').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
